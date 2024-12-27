@@ -2,7 +2,9 @@
 
 # 基于LOB进行不同周期涨跌预测的实验报告
 
-**[朱羿州](zhuyizhou2333@gmail.com) [陈奕玮](yiweichen211@gmail.com)**
+**朱羿州**  📧:<zhuyizhou2333@gmail.com>
+
+**陈奕玮**  📧:<yiweichen211@gmail.com>
 
 ## 任务描述
 
