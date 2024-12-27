@@ -80,54 +80,29 @@
   ```python
 
   def TED_1(bid_size,ask_size):
-
       '''描述流动性的韧劲，低于平均值一个标准差之后恢复的平均用时'''
-
       total_liquid = bid_size + ask_size
-
       sum_liquid = np.sum(total_liquid,axis=1)
-
-      # print(sum_liquid)
-
       liquid_mean = np.mean(sum_liquid)
-
       liquid_std = np.std(sum_liquid)
-
       liquid_lack = sum_liquid < liquid_mean - liquid_std
-
       liquid_lack.astype(int)
-
-      # print(liquid_lack)
-
-      # 现在将liquid_lack转化为一个序列，1代表缺乏流动性，0代表正常
-
       sum = np.sum(liquid_lack)
-
       diff = np.diff(liquid_lack)
-
       count = 0
-
       for i in liquid_lack:
-
           if i > 0:
-
               count += 1
-
       returnsum / (count + 1)
-
   ```
 + 买单卖单的平均年龄，买卖价的变化程度、数量敏感度等，总计七个因子。
 
   ```python
 
   def _bid_quantity_sensitive(bid,bid_size):
-
       '''买价的数量敏感度'''
-
       now_bid = bid[-1,:]
-
       now_bid_size = bid_size[-1,:]
-
       return (now_bid[0] - now_bid[len(now_bid)-1]) / np.sum(now_bid_size)
 
   ```
@@ -258,75 +233,42 @@ params = {
 + 发现对于不同的票，预测难度存在很大差异，预测结果也存在很大差异。对于部分预测效果较好的股票，可以达到类似如下所示的数据：
 
 ```log
-
 2024-12-23T18:49:31.361447+0800 | SUCCESS | 
-
 stock_id:7, label_number:2, threshold:0.5900000000000001
-
 2024-12-23T18:49:31.362523+0800 | SUCCESS | 
-
 stock_id:7, label_number:2, num_round:100
-
 2024-12-23T18:49:52.222854+0800 | SUCCESS | 
-
 accuracy_score:0.5845698269172909
-
 2024-12-23T18:49:52.224810+0800 | SUCCESS | 
-
               precision    recall  f1-score   support
 
-
          0.0     0.6792    0.0223    0.0431     13788
-
          1.0     0.5826    0.9962    0.7353     36373
-
          2.0     0.7357    0.0287    0.0553     12988
 
-
     accuracy                         0.5846     63149
-
    macro avg     0.6659    0.3491    0.2779     63149
-
 weighted avg     0.6352    0.5846    0.4443     63149
 
-
 2024-12-23T18:49:52.228561+0800 | SUCCESS | 
-
 confusion_matrix:
-
-[[  30713409    72]
-
- [   7636235    62]
-
- [   6912546   373]]
-
+[[  307 13409    72]
+ [   76 36235    62]
+ [   69 12546   373]]
 2024-12-23T18:49:52.230565+0800 | SUCCESS | 
-
-f_0_5_score:[0.098422670.635405230.12420085]
-
+f_0_5_score:[0.09842267 0.63540523 0.12420085]
 2024-12-23T18:49:52.231565+0800 | SUCCESS | 
-
-f_1_score:[0.043117980.735265770.05527973]
-
+f_1_score:[0.04311798 0.73526577 0.05527973]
 2024-12-23T18:49:52.232565+0800 | SUCCESS | 
-
 weighted_f_0_5_score:0.11131176245210203
-
 2024-12-23T18:49:52.233573+0800 | SUCCESS | 
-
 weighted_f_1_score:0.049198855381310594
 
-
 2024-12-23T18:49:52.325560+0800 | INFO | Trade count for label 0: 452
-
 2024-12-23T18:49:52.325560+0800 | INFO | Trade count for label 2: 507
-
 2024-12-23T18:49:52.327299+0800 | INFO | Average pnl for label 0: 19.284994484295225
-
 2024-12-23T18:49:52.328378+0800 | INFO | Average pnl for label 2: 37.3676227612456
-
 2024-12-23T18:49:52.329391+0800 | INFO | total average pnl: 28.844840716217895
-
 ```
 
 经过测试，label5具有最佳的预测精确度，但是label20由于时间更长，所以收益率更加可观。我们最终提交的模型只对label20进行预测，标的为1、2、3、4、7。在公榜上的表现如下：
