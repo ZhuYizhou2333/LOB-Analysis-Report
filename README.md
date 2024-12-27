@@ -78,7 +78,6 @@
 + 流动性韧劲以及流动性匮乏因子，总计六个因子。
 
   ```python
-
   def TED_1(bid_size,ask_size):
       '''描述流动性的韧劲，低于平均值一个标准差之后恢复的平均用时'''
       total_liquid = bid_size + ask_size
@@ -104,7 +103,6 @@
       now_bid = bid[-1,:]
       now_bid_size = bid_size[-1,:]
       return (now_bid[0] - now_bid[len(now_bid)-1]) / np.sum(now_bid_size)
-
   ```
 
 ### 其他：
@@ -216,7 +214,7 @@ params = {
 
 + 在训练过程中，我们尝试对 ``max_depth``、``min_child_weight``、``num_round``、``weights``等参数进行了寻优。发现调优效果比较显著的是针对树高的调优（不同股票对应的最佳树高差异很大，反映出模型预测的困难程度差异也很大），以及对于不同标签权重的调整（主要涉及了准确率和召回率之间的权衡取舍）。
 
-+**模型训练的关键操作**：
++ **模型训练的关键操作**：
 
 + 数据集划分：为了防止数据集的泄露，采用顺序划分的方式，按照8:2的比例划分训练集和验证集。
 + 训练类型：使用'multi:softprob'作为目标函数。
