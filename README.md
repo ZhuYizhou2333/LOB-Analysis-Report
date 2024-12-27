@@ -1,9 +1,24 @@
 # LOB-Analysis-Report
 
-
 # 基于LOB进行不同周期涨跌预测的实验报告
 
 **[朱羿州](zhuyizhou2333@gmail.com) [陈奕玮](yiweichen211@gmail.com)**
+
+## 任务描述
+
+- **预测目标：** 用过往及当前数据预测未来中间价的移动方向
+- - 0代表中间价下跌，1代表不涨不跌，2代表上涨。
+  - 对于预测窗口为5tick，10tick，不涨不跌的认定阈值取0.05%
+  - 对于预测窗口20tick，40tick，60tick，不涨不跌的认定阈值取0.1%
+- **输入数据：**
+  - 行情频率:3秒一个数据点(也称为1个tick的snapshot)
+  - 每个数据点包括当前最新成交价，五档量价，过去3秒内的成交金额，时间戳，标的，日期
+  - 训练集中每个数据点包含5个预测标签的标注
+  - 一共包括10只股票79个交易日的快照数据
+    - 挂单价格进行匿名处理：用相对前一个交易日收盘价的涨跌幅表示
+    - 挂单金额进行匿名处理：用换手率代替
+    - 日期进行匿名处理：重置为0-78
+- 允许利用过去不超过100tick(包含当前tick)的数据，预测未来N个tick后的中间价移动方向
 
 ## 数据分析及初步处理
 
@@ -61,7 +76,7 @@
 
   ```python
 
-  defTED_1(bid_size,ask_size):
+  def TED_1(bid_size,ask_size):
 
       '''描述流动性的韧劲，低于平均值一个标准差之后恢复的平均用时'''
 
@@ -102,7 +117,7 @@
 
   ```python
 
-  def_bid_quantity_sensitive(bid,bid_size):
+  def _bid_quantity_sensitive(bid,bid_size):
 
       '''买价的数量敏感度'''
 
@@ -145,33 +160,19 @@
   - 高频已实现偏度
 
     ```python
-
-    def_ret_skew(bid, ask):
-
+    def _ret_skew(bid, ask):
         '''高频已实现偏度，刻画股票日内快速拉升或下跌的特征，与收益率负相关'''
-
         # 计算中间价
-
         mid = (ask[:, 0] + bid[:, 0]) / 2
-
         # 计算对数收益的平方
-
         yRtn = np.square(np.diff(np.log(mid)))
-
         # 计算所有值的偏度
-
         n = len(yRtn)
-
         mean_yRtn = np.mean(yRtn)
-
         std_yRtn = np.std(yRtn)
-
         # 计算偏度
-
         skewness = (n / ((n - 1) * (n - 2))) * np.sum(((yRtn - mean_yRtn) ** 3) / (std_yRtn ** 3))
-
         return skewness
-
     ```
 - 量价相关性因子
 
@@ -194,17 +195,11 @@
   - 相对扩散率
 
   ```python
-
-    defRSpread(bid, ask):
-
+    def RSpread(bid, ask):
         '''相对扩散率'''
-
         # 计算相对扩散率
-
         r_spread = (ask[:, 0] - bid[:, 0]) / (ask[:, 0] + bid[:, 0])
-
         return [np.mean(r_spread), np.std(r_spread), _gini(r_spread)]
-
   ```
 
   - 挂单量相对扩散率
@@ -225,27 +220,16 @@
 ```python
 
 params = {
-
     'booster': 'gbtree',
-
     'eta': 0.1,
-
     'max_depth': 2,
-
     'min_child_weight': 1,
-
     'gamma': 0,
-
     'subsample': 0.8,
-
     'colsample_bytree': 0.8,
-
     'objective': 'multi:softmax',
-
     'num_class': 3, 
-
     'eval_metric': 'mlogloss'
-
 }
 
 ```
